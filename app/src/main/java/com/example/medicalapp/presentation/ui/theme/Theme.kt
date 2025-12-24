@@ -82,8 +82,7 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun MedicalAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disabled for consistent medical app branding
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -112,12 +111,6 @@ fun MedicalAppTheme(
     )
 }
 
-// Extension functions for easy access to custom colors
-val MaterialTheme.medicalColors: MedicalColors
-    @Composable
-    get() = MedicalColors
-
-// Helper function to get appropriate text color based on theme
 @Composable
 fun textPrimaryColor() = if (isSystemInDarkTheme()) {
     MedicalColors.TextPrimaryDark

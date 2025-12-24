@@ -1,34 +1,70 @@
 package com.example.medicalapp.presentation.ui.login
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Facebook
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.medicalapp.R
-import com.example.medicalapp.presentation.ui.theme.*
+import com.example.medicalapp.presentation.ui.theme.MedicalShapes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +75,6 @@ fun LoginScreen(
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
-    // Navigate when login is successful
     LaunchedEffect(uiState.isLoginSuccessful) {
         if (uiState.isLoginSuccessful) {
             onNavigateToHome()
@@ -67,17 +102,14 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Logo Section
             LogoSection()
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Welcome Text
             WelcomeSection()
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Login Form
             LoginForm(
                 email = uiState.email,
                 password = uiState.password,
@@ -95,7 +127,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Error Message
             AnimatedVisibility(
                 visible = uiState.error != null,
                 enter = fadeIn() + slideInVertically(),
@@ -130,7 +161,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Login Button
             LoginButton(
                 isLoading = uiState.isLoading,
                 onClick = viewModel::onLogin
@@ -138,7 +168,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Forgot Password
             TextButton(onClick = { /* TODO */ }) {
                 Text(
                     text = "Forgot Password?",
@@ -149,28 +178,31 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Divider with OR
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                HorizontalDivider(modifier = Modifier.weight(1f))
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                )
                 Text(
                     text = "  OR  ",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                HorizontalDivider(modifier = Modifier.weight(1f))
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Social Login Options
-            SocialLoginSection()
+            // TODO() SocialLoginSection()
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Sign Up
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -256,7 +288,6 @@ private fun LoginForm(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Email Field
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
@@ -282,7 +313,6 @@ private fun LoginForm(
             shape = MedicalShapes.TextFieldShape
         )
 
-        // Password Field
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
@@ -323,7 +353,6 @@ private fun LoginForm(
             shape = MedicalShapes.TextFieldShape
         )
 
-        // Remember Me
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -380,7 +409,6 @@ private fun SocialLoginSection() {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Google Sign In
         OutlinedButton(
             onClick = { /* TODO */ },
             modifier = Modifier
@@ -406,7 +434,6 @@ private fun SocialLoginSection() {
             }
         }
 
-        // Facebook Sign In
         OutlinedButton(
             onClick = { /* TODO */ },
             modifier = Modifier

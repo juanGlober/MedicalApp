@@ -50,7 +50,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(PrimaryBlue), // Blue color from the design
+            .background(PrimaryBlue),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -60,16 +60,14 @@ fun SplashScreen(
                 .scale(scale.value)
                 .alpha(alpha.value)
         ) {
-            // Medical Logo
             MedicalLogo(
                 modifier = Modifier.size(120.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // App Name
             Text(
-                text = "Skin\nFirts",
+                text = "Skin\nFirst",
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Light,
                 color = Color.White,
@@ -79,7 +77,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Subtitle
             Text(
                 text = "Dermatology Center",
                 fontSize = 16.sp,

@@ -12,7 +12,6 @@ val Shapes = Shapes(
     extraLarge = RoundedCornerShape(24.dp)
 )
 
-// Custom shapes for specific components
 object MedicalShapes {
     val CardShape = RoundedCornerShape(16.dp)
     val ButtonShape = RoundedCornerShape(12.dp)

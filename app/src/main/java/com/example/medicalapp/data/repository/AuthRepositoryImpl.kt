@@ -63,7 +63,6 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout(): Flow<BaseResult<Unit>> = flow {
         emit(BaseResult.Loading)
         try {
-            // Clear session data
             emit(BaseResult.Success(Unit))
         } catch (e: Exception) {
             emit(BaseResult.Error(e))

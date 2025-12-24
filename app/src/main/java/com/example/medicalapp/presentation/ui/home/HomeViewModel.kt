@@ -55,7 +55,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadUserData() {
-        // Simular datos del usuario
         _uiState.update {
             it.copy(
                 user = User(
@@ -71,7 +70,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun initializeSampleDoctors() {
-        // Esta función se llamará una vez para crear doctores de muestra
         val sampleDoctors = listOf(
             Doctor(
                 id = "1",
@@ -115,17 +113,15 @@ class HomeViewModel @Inject constructor(
             )
         )
 
-        // Aquí normalmente insertarías en la base de datos
         _uiState.update { it.copy(doctors = sampleDoctors) }
     }
 
     fun onSearchQueryChange(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        // Implementar búsqueda
     }
 
     fun onDoctorClick(doctor: Doctor) {
-        // Navegar a detalle del doctor
+        // TODO() Doctor Detail
     }
 
     fun onTabSelected(tab: HomeTab) {

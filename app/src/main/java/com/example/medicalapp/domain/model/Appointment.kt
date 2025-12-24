@@ -7,7 +7,7 @@ data class Appointment(
     val doctorId: String,
     val doctorName: String,
     val specialty: String,
-    val date: Date,
+    val date: String,
     val time: String,
     val type: AppointmentType,
     val status: AppointmentStatus

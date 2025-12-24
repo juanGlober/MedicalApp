@@ -21,7 +21,6 @@ fun MedicalLogo(
         val crossHeight = size.height * 0.8f
         val cornerRadius = size.width * 0.1f
 
-        // Draw medical cross
         drawMedicalCross(
             color = color,
             crossWidth = crossWidth,
@@ -29,7 +28,6 @@ fun MedicalLogo(
             cornerRadius = cornerRadius
         )
 
-        // Draw decorative leaves
         drawLeaves(
             color = color,
             centerX = size.width / 2,
@@ -49,7 +47,6 @@ private fun DrawScope.drawMedicalCross(
     val verticalLeft = (size.width - crossWidth) / 2
     val verticalTop = (size.height - crossHeight) / 2
 
-    // Horizontal part of cross
     drawRoundRect(
         color = color,
         topLeft = Offset(horizontalLeft, horizontalTop),
@@ -57,7 +54,6 @@ private fun DrawScope.drawMedicalCross(
         cornerRadius = CornerRadius(cornerRadius, cornerRadius)
     )
 
-    // Vertical part of cross
     drawRoundRect(
         color = color,
         topLeft = Offset(verticalLeft, verticalTop),
@@ -72,7 +68,6 @@ private fun DrawScope.drawLeaves(
     centerY: Float
 ) {
     val leafPath = Path().apply {
-        // Top-left leaf
         moveTo(centerX - size.width * 0.25f, centerY - size.height * 0.15f)
         quadraticBezierTo(
             centerX - size.width * 0.35f, centerY - size.height * 0.25f,
@@ -83,7 +78,6 @@ private fun DrawScope.drawLeaves(
             centerX - size.width * 0.25f, centerY - size.height * 0.15f
         )
 
-        // Top-right leaf
         moveTo(centerX + size.width * 0.15f, centerY - size.height * 0.25f)
         quadraticBezierTo(
             centerX + size.width * 0.25f, centerY - size.height * 0.35f,

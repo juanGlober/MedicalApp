@@ -26,7 +26,6 @@ object DatabaseModule {
             MedicalDatabase::class.java,
             "medical_database"
         )
-            .fallbackToDestructiveMigration(false)
             .build()
     }
 

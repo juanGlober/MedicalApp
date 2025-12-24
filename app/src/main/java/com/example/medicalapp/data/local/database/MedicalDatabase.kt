@@ -8,8 +8,11 @@ import com.example.medicalapp.data.local.entities.UserEntity
 import com.example.medicalapp.data.local.entities.DoctorEntity
 
 @Database(
-    entities = [UserEntity::class, DoctorEntity::class],
-    version = 2,
+    entities = [
+        UserEntity::class,
+        DoctorEntity::class
+    ],
+    version = 1,
     exportSchema = false
 )
 abstract class MedicalDatabase : RoomDatabase() {

@@ -1,32 +1,68 @@
 package com.example.medicalapp.presentation.ui.home
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.medicalapp.R
+import com.example.medicalapp.domain.model.Appointment
 import com.example.medicalapp.domain.model.Doctor
-import com.example.medicalapp.presentation.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,24 +95,20 @@ fun HomeScreen(
                 .padding(paddingValues),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            // Welcome Section
             item {
-                WelcomeSection(userName = uiState.user?.name ?: "User")
+                WelcomeSection()
             }
 
-            // Quick Actions
             item {
                 QuickActionsSection()
             }
 
-            // Today's Appointment Card
             item {
                 uiState.upcomingAppointment?.let { appointment ->
                     AppointmentCard(appointment = appointment)
                 }
             }
 
-            // Section Title
             item {
                 SectionTitle(
                     title = "Available Doctors",
@@ -84,7 +116,6 @@ fun HomeScreen(
                 )
             }
 
-            // Doctors List
             if (uiState.isLoading) {
                 item {
                     Box(
@@ -105,7 +136,6 @@ fun HomeScreen(
                 }
             }
 
-            // Error State
             uiState.error?.let { error ->
                 item {
                     ErrorCard(message = error)
@@ -117,7 +147,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar(
+fun HomeTopBar(
     user: com.example.medicalapp.domain.model.User?,
     onNotificationClick: () -> Unit,
     onSettingsClick: () -> Unit
@@ -128,7 +158,6 @@ private fun HomeTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Profile Picture
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -137,7 +166,6 @@ private fun HomeTopBar(
                     contentAlignment = Alignment.Center
                 ) {
                     if (user?.photoUrl != null) {
-                        // Load image
                     } else {
                         Text(
                             text = user?.name?.firstOrNull()?.toString() ?: "U",
@@ -186,7 +214,7 @@ private fun HomeTopBar(
 }
 
 @Composable
-private fun WelcomeSection(userName: String) {
+fun WelcomeSection() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,7 +256,7 @@ private fun WelcomeSection(userName: String) {
 }
 
 @Composable
-private fun QuickActionsSection() {
+fun QuickActionsSection() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -301,8 +329,8 @@ private fun QuickActionCard(
 }
 
 @Composable
-private fun AppointmentCard(
-    appointment: com.example.medicalapp.domain.model.Appointment
+fun AppointmentCard(
+    appointment: Appointment
 ) {
     Card(
         modifier = Modifier
@@ -363,7 +391,7 @@ private fun AppointmentCard(
 }
 
 @Composable
-private fun SectionTitle(
+fun SectionTitle(
     title: String,
     onSeeAllClick: () -> Unit
 ) {
@@ -390,7 +418,7 @@ private fun SectionTitle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DoctorCard(
+fun DoctorCard(
     doctor: Doctor,
     onClick: () -> Unit
 ) {
@@ -411,7 +439,6 @@ private fun DoctorCard(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Doctor Avatar
             Box(
                 modifier = Modifier
                     .size(60.dp)
@@ -427,7 +454,6 @@ private fun DoctorCard(
                 )
             }
 
-            // Doctor Info
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -450,7 +476,6 @@ private fun DoctorCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Rating
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -468,7 +493,6 @@ private fun DoctorCard(
                         )
                     }
 
-                    // Reviews
                     Text(
                         text = "(${doctor.reviewCount} reviews)",
                         style = MaterialTheme.typography.bodySmall,
@@ -477,7 +501,6 @@ private fun DoctorCard(
                 }
             }
 
-            // Action Buttons
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

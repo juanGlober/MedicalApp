@@ -39,11 +39,9 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLogin() {
-        // Validar campos
         val emailResult: ValidationResult = validateEmailUseCase(_uiState.value.email)
         val passwordResult: ValidationResult = validatePasswordUseCase(_uiState.value.password)
 
-        // Verificar si hay errores
         val hasError = listOf(emailResult, passwordResult).any { !it.successful }
 
         if (hasError) {
@@ -55,8 +53,6 @@ class LoginViewModel @Inject constructor(
             }
             return
         }
-
-        // Proceder con el login si no hay errores
         performLogin()
     }
 
@@ -102,13 +98,5 @@ class LoginViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
-    }
-
-    fun createTestUser() {
-        viewModelScope.launch {
-            // Este método se puede usar para crear un usuario de prueba
-            // Email: test@skinfirst.com
-            // Password: Test123
-        }
     }
 }
