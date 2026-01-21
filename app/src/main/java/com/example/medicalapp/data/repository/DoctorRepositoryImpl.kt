@@ -5,33 +5,36 @@ import com.example.medicalapp.data.mapper.toDoctor
 import com.example.medicalapp.domain.model.Doctor
 import com.example.medicalapp.domain.repository.DoctorRepository
 import com.example.medicalapp.domain.usecase.base.BaseResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DoctorRepositoryImpl @Inject constructor(
     private val doctorDao: DoctorDao
 ) : DoctorRepository {
 
-    override fun getAllDoctors(): Flow<BaseResult<List<Doctor>>> = flow {
-        emit(BaseResult.Loading)
-        try {
-            doctorDao.getAllDoctors()
-                .map { entities ->
-                    entities.map { it.toDoctor() }
-                }
-                .collect { doctors ->
-                    emit(BaseResult.Success(doctors))
-                }
-        } catch (e: Exception) {
-            emit(BaseResult.Error(e))
-        }
+    private fun asException(throwable: Throwable): Exception =
+        throwable as? Exception ?: Exception(throwable)
+
+    override fun getAllDoctors(): Flow<BaseResult<List<Doctor>>> {
+        return doctorDao.getAllDoctors()
+            .map { entities -> entities.map { it.toDoctor() } }
+            .map { doctors -> BaseResult.Success(doctors) as BaseResult<List<Doctor>> }
+            .onStart { emit(BaseResult.Loading) }
+            .catch { emit(BaseResult.Error(asException(it))) }
+            .flowOn(Dispatchers.IO)
     }
 
     override suspend fun getDoctorById(id: String): BaseResult<Doctor> {
         return try {
-            val doctor = doctorDao.getDoctorById(id)?.toDoctor()
+            val doctor = withContext(Dispatchers.IO) {
+                doctorDao.getDoctorById(id)?.toDoctor()
+            }
             if (doctor != null) {
                 BaseResult.Success(doctor)
             } else {
@@ -42,18 +45,12 @@ class DoctorRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDoctorsBySpecialty(specialty: String): Flow<BaseResult<List<Doctor>>> = flow {
-        emit(BaseResult.Loading)
-        try {
-            doctorDao.getDoctorsBySpecialty(specialty)
-                .map { entities ->
-                    entities.map { it.toDoctor() }
-                }
-                .collect { doctors ->
-                    emit(BaseResult.Success(doctors))
-                }
-        } catch (e: Exception) {
-            emit(BaseResult.Error(e))
-        }
+    override fun getDoctorsBySpecialty(specialty: String): Flow<BaseResult<List<Doctor>>> {
+        return doctorDao.getDoctorsBySpecialty(specialty)
+            .map { entities -> entities.map { it.toDoctor() } }
+            .map { doctors -> BaseResult.Success(doctors) as BaseResult<List<Doctor>> }
+            .onStart { emit(BaseResult.Loading) }
+            .catch { emit(BaseResult.Error(asException(it))) }
+            .flowOn(Dispatchers.IO)
     }
 }

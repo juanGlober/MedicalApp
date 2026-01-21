@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.medicalapp.R
 import com.example.medicalapp.domain.model.Doctor
 import com.example.medicalapp.domain.model.Appointment
 import com.example.medicalapp.domain.model.AppointmentStatus
@@ -23,6 +25,8 @@ fun DoctorCardPreview() {
     MedicalAppTheme {
         DoctorCard(
             doctor = MockData.doctors[0],
+            isFavorite = false,
+            onFavoriteToggle = {},
             onClick = {}
         )
     }
@@ -48,7 +52,7 @@ fun AppointmentCardPreview() {
 @Composable
 fun QuickActionsPreview() {
     MedicalAppTheme {
-        QuickActionsSection()
+        QuickActionsSection(onDoctorsClick = {})
     }
 }
 
@@ -73,11 +77,16 @@ fun HomeScreenPreview() {
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 item { WelcomeSection() }
-                item { QuickActionsSection() }
+                item { QuickActionsSection(onDoctorsClick = {}) }
                 item { AppointmentCard(appointment = MockData.upcomingAppointment) }
-                item { SectionTitle(title = "Available Doctors", onSeeAllClick = {}) }
+                item { SectionTitle(title = stringResource(R.string.available_doctors), onSeeAllClick = {}) }
                 items(MockData.doctors) { doctor ->
-                    DoctorCard(doctor = doctor, onClick = {})
+                    DoctorCard(
+                        doctor = doctor,
+                        isFavorite = false,
+                        onFavoriteToggle = {},
+                        onClick = {}
+                    )
                 }
             }
         }

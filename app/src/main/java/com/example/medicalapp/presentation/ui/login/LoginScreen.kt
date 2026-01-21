@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,7 +64,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.medicalapp.R
 import com.example.medicalapp.presentation.ui.theme.MedicalShapes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,7 +153,7 @@ fun LoginScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = uiState.error ?: "",
+                            text = uiState.error?.let { stringResource(it) } ?: "",
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -170,7 +172,7 @@ fun LoginScreen(
 
             TextButton(onClick = { /* TODO */ }) {
                 Text(
-                    text = "Forgot Password?",
+                    text = stringResource(R.string.forgot_password),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -187,7 +189,8 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                 )
                 Text(
-                    text = "  OR  ",
+                    text = stringResource(R.string.or_separator),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -208,13 +211,13 @@ fun LoginScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Don't have an account? ",
+                    text = stringResource(R.string.no_account_prompt),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(onClick = { /* TODO */ }) {
                     Text(
-                        text = "Sign Up",
+                        text = stringResource(R.string.sign_up),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
@@ -239,7 +242,7 @@ private fun LogoSection() {
     ) {
         Icon(
             imageVector = Icons.Default.LocalHospital,
-            contentDescription = "Logo",
+            contentDescription = stringResource(R.string.logo_content_description),
             modifier = Modifier.size(60.dp),
             tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
@@ -253,14 +256,14 @@ private fun WelcomeSection() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Welcome Back!",
+            text = stringResource(R.string.welcome_back),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = "Sign in to continue to Skin First",
+            text = stringResource(R.string.sign_in_to_continue),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -273,8 +276,8 @@ private fun WelcomeSection() {
 private fun LoginForm(
     email: String,
     password: String,
-    emailError: String?,
-    passwordError: String?,
+    emailError: Int?,
+    passwordError: Int?,
     isPasswordVisible: Boolean,
     rememberMe: Boolean,
     onEmailChange: (String) -> Unit,
@@ -291,16 +294,16 @@ private fun LoginForm(
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = { Text("Email") },
-            placeholder = { Text("Enter your email") },
+            label = { Text(stringResource(R.string.email_label)) },
+            placeholder = { Text(stringResource(R.string.email_placeholder)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "Email"
+                    contentDescription = stringResource(R.string.email_content_description)
                 )
             },
             isError = emailError != null,
-            supportingText = emailError?.let { { Text(it) } },
+            supportingText = emailError?.let { { Text(stringResource(it)) } },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -316,12 +319,12 @@ private fun LoginForm(
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = { Text("Password") },
-            placeholder = { Text("Enter your password") },
+            label = { Text(stringResource(R.string.password_label)) },
+            placeholder = { Text(stringResource(R.string.password_placeholder)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Password"
+                    contentDescription = stringResource(R.string.password_content_description)
                 )
             },
             trailingIcon = {
@@ -330,14 +333,14 @@ private fun LoginForm(
                         imageVector = if (isPasswordVisible)
                             Icons.Default.VisibilityOff else Icons.Default.Visibility,
                         contentDescription = if (isPasswordVisible)
-                            "Hide password" else "Show password"
+                            stringResource(R.string.hide_password) else stringResource(R.string.show_password)
                     )
                 }
             },
             visualTransformation = if (isPasswordVisible)
                 VisualTransformation.None else PasswordVisualTransformation(),
             isError = passwordError != null,
-            supportingText = passwordError?.let { { Text(it) } },
+            supportingText = passwordError?.let { { Text(stringResource(it)) } },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
@@ -366,7 +369,7 @@ private fun LoginForm(
                     onCheckedChange = onRememberMeChange
                 )
                 Text(
-                    text = "Remember me",
+                    text = stringResource(R.string.remember_me),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -395,7 +398,7 @@ private fun LoginButton(
             )
         } else {
             Text(
-                text = "Sign In",
+                text = stringResource(R.string.sign_in),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -423,12 +426,12 @@ private fun SocialLoginSection() {
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Google",
+                    contentDescription = stringResource(R.string.google_content_description),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Continue with Google",
+                    text = stringResource(R.string.continue_with_google),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -448,12 +451,12 @@ private fun SocialLoginSection() {
             ) {
                 Icon(
                     imageVector = Icons.Default.Facebook,
-                    contentDescription = "Facebook",
+                    contentDescription = stringResource(R.string.facebook_content_description),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Continue with Facebook",
+                    text = stringResource(R.string.continue_with_facebook),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

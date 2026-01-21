@@ -1,6 +1,7 @@
 package com.example.medicalapp.domain.usecase.auth
 
 import android.util.Patterns
+import com.example.medicalapp.domain.model.ValidationError
 import com.example.medicalapp.domain.model.ValidationResult
 import javax.inject.Inject
 
@@ -10,13 +11,13 @@ class ValidateEmailUseCase @Inject constructor() {
         if (email.isBlank()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Email can't be blank"
+                error = ValidationError.EmailBlank
             )
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "That's not a valid email"
+                error = ValidationError.EmailInvalid
             )
         }
         return ValidationResult(successful = true)

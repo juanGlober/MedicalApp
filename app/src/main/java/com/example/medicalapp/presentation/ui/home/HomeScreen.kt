@@ -1,6 +1,7 @@
 package com.example.medicalapp.presentation.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,10 +58,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.medicalapp.R
 import com.example.medicalapp.domain.model.Appointment
 import com.example.medicalapp.domain.model.Doctor
 
@@ -69,6 +72,7 @@ import com.example.medicalapp.domain.model.Doctor
 fun HomeScreen(
     onNavigateToDetail: (String) -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToDoctors: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -84,7 +88,9 @@ fun HomeScreen(
         bottomBar = {
             HomeBottomBar(
                 selectedTab = uiState.selectedTab,
-                onTabSelected = viewModel::onTabSelected
+                onTabSelected = viewModel::onTabSelected,
+                onProfileClick = onNavigateToProfile,
+                onCalendarClick = {}
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -95,50 +101,85 @@ fun HomeScreen(
                 .padding(paddingValues),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            item {
-                WelcomeSection()
-            }
+            when (uiState.selectedTab) {
+                HomeTab.DOCTORS -> {
+                    item {
+                        WelcomeSection()
+                    }
 
-            item {
-                QuickActionsSection()
-            }
+                    item {
+                        QuickActionsSection(onDoctorsClick = onNavigateToDoctors)
+                    }
 
-            item {
-                uiState.upcomingAppointment?.let { appointment ->
-                    AppointmentCard(appointment = appointment)
-                }
-            }
+                    item {
+                        uiState.upcomingAppointment?.let { appointment ->
+                            AppointmentCard(appointment = appointment)
+                        }
+                    }
 
-            item {
-                SectionTitle(
-                    title = "Available Doctors",
-                    onSeeAllClick = { /* TODO */ }
-                )
-            }
+                    item {
+                        SectionTitle(
+                            title = stringResource(R.string.available_doctors),
+                            onSeeAllClick = onNavigateToDoctors
+                        )
+                    }
 
-            if (uiState.isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                    if (uiState.isLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    } else {
+                        items(uiState.doctors) { doctor ->
+                            DoctorCard(
+                                doctor = doctor,
+                                isFavorite = uiState.favoriteDoctorIds.contains(doctor.id),
+                                onFavoriteToggle = { viewModel.onFavoriteToggle(doctor.id) },
+                                onClick = { onNavigateToDetail(doctor.id) }
+                            )
+                        }
+                    }
+
+                    uiState.error?.let { errorResId ->
+                        item {
+                            ErrorCard(message = stringResource(errorResId))
+                        }
                     }
                 }
-            } else {
-                items(uiState.doctors) { doctor ->
-                    DoctorCard(
-                        doctor = doctor,
-                        onClick = { viewModel.onDoctorClick(doctor) }
-                    )
+                HomeTab.FAVORITE -> {
+                    val favoriteDoctors = uiState.doctors.filter { doctor ->
+                        uiState.favoriteDoctorIds.contains(doctor.id)
+                    }
+                    if (favoriteDoctors.isEmpty()) {
+                        item {
+                            EmptyState(message = stringResource(R.string.favorites_placeholder))
+                        }
+                    } else {
+                        items(favoriteDoctors) { doctor ->
+                            DoctorCard(
+                                doctor = doctor,
+                                isFavorite = true,
+                                onFavoriteToggle = { viewModel.onFavoriteToggle(doctor.id) },
+                                onClick = { onNavigateToDetail(doctor.id) }
+                            )
+                        }
+                    }
                 }
-            }
-
-            uiState.error?.let { error ->
-                item {
-                    ErrorCard(message = error)
+                HomeTab.PROFILE -> {
+                    item {
+                        EmptyState(message = stringResource(R.string.profile_placeholder))
+                    }
+                }
+                HomeTab.CALENDAR -> {
+                    item {
+                        EmptyState(message = stringResource(R.string.calendar_placeholder))
+                    }
                 }
             }
         }
@@ -168,7 +209,8 @@ fun HomeTopBar(
                     if (user?.photoUrl != null) {
                     } else {
                         Text(
-                            text = user?.name?.firstOrNull()?.toString() ?: "U",
+                            text = user?.name?.firstOrNull()?.toString()
+                                ?: stringResource(R.string.default_user_initial),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
                         )
@@ -177,12 +219,12 @@ fun HomeTopBar(
 
                 Column {
                     Text(
-                        text = "Hi, Welcome Back",
+                        text = stringResource(R.string.home_greeting),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = user?.name ?: "User",
+                        text = user?.name ?: stringResource(R.string.default_user_name),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -196,14 +238,14 @@ fun HomeTopBar(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
-                        contentDescription = "Notifications"
+                        contentDescription = stringResource(R.string.notifications)
                     )
                 }
             }
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Settings"
+                    contentDescription = stringResource(R.string.settings)
                 )
             }
         },
@@ -233,14 +275,14 @@ fun WelcomeSection() {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "How are you feeling today?",
+                    text = stringResource(R.string.how_are_you_feeling),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Book your appointment now",
+                    text = stringResource(R.string.book_appointment_now),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -256,7 +298,9 @@ fun WelcomeSection() {
 }
 
 @Composable
-fun QuickActionsSection() {
+fun QuickActionsSection(
+    onDoctorsClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,27 +309,31 @@ fun QuickActionsSection() {
     ) {
         QuickActionCard(
             icon = Icons.Default.Person,
-            title = "Doctors",
+            title = stringResource(R.string.doctors),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = onDoctorsClick
         )
         QuickActionCard(
             icon = Icons.Default.Favorite,
-            title = "Favorite",
+            title = stringResource(R.string.favorites),
             color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = {}
         )
         QuickActionCard(
             icon = Icons.Default.LocalHospital,
-            title = "Clinic",
+            title = stringResource(R.string.clinic),
             color = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = {}
         )
         QuickActionCard(
             icon = Icons.Default.Search,
-            title = "Search",
+            title = stringResource(R.string.search),
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = {}
         )
     }
 }
@@ -295,10 +343,11 @@ private fun QuickActionCard(
     icon: ImageVector,
     title: String,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.1f)
@@ -351,13 +400,13 @@ fun AppointmentCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Today's Appointment",
+                    text = stringResource(R.string.todays_appointment),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options",
+                    contentDescription = stringResource(R.string.more_options),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -409,7 +458,7 @@ fun SectionTitle(
         )
         TextButton(onClick = onSeeAllClick) {
             Text(
-                text = "See All",
+                text = stringResource(R.string.see_all),
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -420,6 +469,8 @@ fun SectionTitle(
 @Composable
 fun DoctorCard(
     doctor: Doctor,
+    isFavorite: Boolean,
+    onFavoriteToggle: () -> Unit,
     onClick: () -> Unit
 ) {
     Card(
@@ -494,7 +545,7 @@ fun DoctorCard(
                     }
 
                     Text(
-                        text = "(${doctor.reviewCount} reviews)",
+                        text = stringResource(R.string.reviews_count, doctor.reviewCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -506,12 +557,13 @@ fun DoctorCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 IconButton(
-                    onClick = { /* TODO: Add to favorites */ },
+                    onClick = onFavoriteToggle,
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Add to favorites",
+                        imageVector = if (isFavorite)
+                            Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = stringResource(R.string.add_to_favorites),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -521,7 +573,7 @@ fun DoctorCard(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Chat,
-                        contentDescription = "Chat",
+                        contentDescription = stringResource(R.string.chat),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -533,7 +585,9 @@ fun DoctorCard(
 @Composable
 private fun HomeBottomBar(
     selectedTab: HomeTab,
-    onTabSelected: (HomeTab) -> Unit
+    onTabSelected: (HomeTab) -> Unit,
+    onProfileClick: () -> Unit,
+    onCalendarClick: () -> Unit
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -546,10 +600,10 @@ private fun HomeBottomBar(
                 Icon(
                     imageVector = if (selectedTab == HomeTab.DOCTORS)
                         Icons.Filled.Home else Icons.Outlined.Home,
-                    contentDescription = "Home"
+                    contentDescription = stringResource(R.string.home)
                 )
             },
-            label = { Text("Home") }
+            label = { Text(stringResource(R.string.home)) }
         )
 
         NavigationBarItem(
@@ -559,35 +613,35 @@ private fun HomeBottomBar(
                 Icon(
                     imageVector = if (selectedTab == HomeTab.FAVORITE)
                         Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favorites"
+                    contentDescription = stringResource(R.string.favorites)
                 )
             },
-            label = { Text("Favorites") }
+            label = { Text(stringResource(R.string.favorites)) }
         )
 
         NavigationBarItem(
             selected = selectedTab == HomeTab.PROFILE,
-            onClick = { onTabSelected(HomeTab.PROFILE) },
+            onClick = onProfileClick,
             icon = {
                 Icon(
                     imageVector = if (selectedTab == HomeTab.PROFILE)
                         Icons.Filled.Person else Icons.Outlined.Person,
-                    contentDescription = "Profile"
+                    contentDescription = stringResource(R.string.profile)
                 )
             },
-            label = { Text("Profile") }
+            label = { Text(stringResource(R.string.profile)) }
         )
 
         NavigationBarItem(
-            selected = false,
-            onClick = { /* TODO: Calendar */ },
+            selected = selectedTab == HomeTab.CALENDAR,
+            onClick = onCalendarClick,
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.CalendarMonth,
-                    contentDescription = "Calendar"
+                    contentDescription = stringResource(R.string.calendar)
                 )
             },
-            label = { Text("Calendar") }
+            label = { Text(stringResource(R.string.calendar)) }
         )
     }
 }
@@ -620,5 +674,24 @@ private fun ErrorCard(message: String) {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+    }
+}
+
+@Composable
+private fun EmptyState(message: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

@@ -1,7 +1,5 @@
 package com.example.medicalapp.domain.model
 
-import java.util.Date
-
 data class Appointment(
     val id: String,
     val doctorId: String,

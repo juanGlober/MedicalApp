@@ -17,9 +17,9 @@ fun MedicalLogo(
     color: Color = Color.White
 ) {
     Canvas(modifier = modifier) {
-        val crossWidth = size.width * 0.3f
-        val crossHeight = size.height * 0.8f
-        val cornerRadius = size.width * 0.1f
+        val crossWidth = size.width * CROSS_WIDTH_RATIO
+        val crossHeight = size.height * CROSS_HEIGHT_RATIO
+        val cornerRadius = size.width * CORNER_RADIUS_RATIO
 
         drawMedicalCross(
             color = color,
@@ -68,24 +68,38 @@ private fun DrawScope.drawLeaves(
     centerY: Float
 ) {
     val leafPath = Path().apply {
-        moveTo(centerX - size.width * 0.25f, centerY - size.height * 0.15f)
-        quadraticBezierTo(
-            centerX - size.width * 0.35f, centerY - size.height * 0.25f,
-            centerX - size.width * 0.25f, centerY - size.height * 0.35f
+        moveTo(
+            centerX - size.width * LEAF_OUTER_WIDTH_RATIO,
+            centerY - size.height * LEAF_TOP_OFFSET_RATIO
         )
         quadraticBezierTo(
-            centerX - size.width * 0.15f, centerY - size.height * 0.25f,
-            centerX - size.width * 0.25f, centerY - size.height * 0.15f
+            centerX - size.width * LEAF_OUTER_CONTROL_X_RATIO,
+            centerY - size.height * LEAF_OUTER_CONTROL_Y_RATIO,
+            centerX - size.width * LEAF_OUTER_WIDTH_RATIO,
+            centerY - size.height * LEAF_OUTER_HEIGHT_RATIO
+        )
+        quadraticBezierTo(
+            centerX - size.width * LEAF_INNER_WIDTH_RATIO,
+            centerY - size.height * LEAF_OUTER_CONTROL_Y_RATIO,
+            centerX - size.width * LEAF_OUTER_WIDTH_RATIO,
+            centerY - size.height * LEAF_TOP_OFFSET_RATIO
         )
 
-        moveTo(centerX + size.width * 0.15f, centerY - size.height * 0.25f)
-        quadraticBezierTo(
-            centerX + size.width * 0.25f, centerY - size.height * 0.35f,
-            centerX + size.width * 0.35f, centerY - size.height * 0.25f
+        moveTo(
+            centerX + size.width * LEAF_INNER_WIDTH_RATIO,
+            centerY - size.height * LEAF_OUTER_CONTROL_Y_RATIO
         )
         quadraticBezierTo(
-            centerX + size.width * 0.25f, centerY - size.height * 0.15f,
-            centerX + size.width * 0.15f, centerY - size.height * 0.25f
+            centerX + size.width * LEAF_OUTER_WIDTH_RATIO,
+            centerY - size.height * LEAF_OUTER_HEIGHT_RATIO,
+            centerX + size.width * LEAF_OUTER_CONTROL_X_RATIO,
+            centerY - size.height * LEAF_OUTER_CONTROL_Y_RATIO
+        )
+        quadraticBezierTo(
+            centerX + size.width * LEAF_OUTER_WIDTH_RATIO,
+            centerY - size.height * LEAF_TOP_OFFSET_RATIO,
+            centerX + size.width * LEAF_INNER_WIDTH_RATIO,
+            centerY - size.height * LEAF_OUTER_CONTROL_Y_RATIO
         )
     }
 
@@ -95,3 +109,13 @@ private fun DrawScope.drawLeaves(
         style = Fill
     )
 }
+
+private const val CROSS_WIDTH_RATIO = 0.3f
+private const val CROSS_HEIGHT_RATIO = 0.8f
+private const val CORNER_RADIUS_RATIO = 0.1f
+private const val LEAF_OUTER_WIDTH_RATIO = 0.25f
+private const val LEAF_OUTER_CONTROL_X_RATIO = 0.35f
+private const val LEAF_OUTER_CONTROL_Y_RATIO = 0.25f
+private const val LEAF_OUTER_HEIGHT_RATIO = 0.35f
+private const val LEAF_INNER_WIDTH_RATIO = 0.15f
+private const val LEAF_TOP_OFFSET_RATIO = 0.15f

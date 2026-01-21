@@ -1,5 +1,6 @@
 package com.example.medicalapp.domain.usecase.auth
 
+import com.example.medicalapp.domain.model.ValidationError
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,7 +22,7 @@ class ValidateEmailUseCaseTest {
         val result = validateEmailUseCase("")
 
         assertFalse(result.successful)
-        assertEquals("Email can't be blank", result.errorMessage)
+        assertEquals(ValidationError.EmailBlank, result.error)
     }
 
     @Test
@@ -29,7 +30,7 @@ class ValidateEmailUseCaseTest {
         val result = validateEmailUseCase("notanemail")
 
         assertFalse(result.successful)
-        assertEquals("That's not a valid email", result.errorMessage)
+        assertEquals(ValidationError.EmailInvalid, result.error)
     }
 
     @Test
@@ -37,6 +38,6 @@ class ValidateEmailUseCaseTest {
         val result = validateEmailUseCase("test@example.com")
 
         assertTrue(result.successful)
-        assertNull(result.errorMessage)
+        assertNull(result.error)
     }
 }

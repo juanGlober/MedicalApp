@@ -1,0 +1,26 @@
+HomeScreen Enhancements (from HomeScreen.png)
+
+1) Header + Search
+- Add compact header row: small avatar, greeting, notification bell.
+- Insert pill-style search bar under header (rounded, light tint).
+
+2) Weekday Selector
+- Add horizontal weekday/date chips (Mon-Sat) with selected state.
+- Use compact circular or pill buttons as in mock.
+
+3) Appointment Timeline Card
+- Replace current appointment card with timeline-style card.
+- Include time markers (9 AM, 10 AM, etc.) and dotted line.
+
+4) Doctor Cards (Compact)
+- Use compact horizontal cards with small avatar, name, specialty.
+- Display rating + review count in a tight row.
+- Add trailing favorite icon button on the right.
+
+5) Bottom Navigation
+- Replace default NavigationBar with rounded, floating bar.
+- Four icons (Home, Chat, Profile, Calendar) centered.
+
+6) Color/Surface Treatment
+- Light blue-tinted background sections and pill surfaces.
+- Use subtle shadows on cards, tighter padding.

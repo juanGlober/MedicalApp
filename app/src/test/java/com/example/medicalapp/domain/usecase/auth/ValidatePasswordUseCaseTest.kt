@@ -1,5 +1,6 @@
 package com.example.medicalapp.domain.usecase.auth
 
+import com.example.medicalapp.domain.model.ValidationError
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,7 +22,7 @@ class ValidatePasswordUseCaseTest {
         val result = validatePasswordUseCase("")
 
         assertFalse(result.successful)
-        assertEquals("Password can't be blank", result.errorMessage)
+        assertEquals(ValidationError.PasswordTooShort, result.error)
     }
 
     @Test
@@ -29,7 +30,7 @@ class ValidatePasswordUseCaseTest {
         val result = validatePasswordUseCase("Test1")
 
         assertFalse(result.successful)
-        assertEquals("Password needs to be at least 6 characters", result.errorMessage)
+        assertEquals(ValidationError.PasswordTooShort, result.error)
     }
 
     @Test
@@ -37,7 +38,7 @@ class ValidatePasswordUseCaseTest {
         val result = validatePasswordUseCase("TestTest")
 
         assertFalse(result.successful)
-        assertEquals("Password must contain at least one digit", result.errorMessage)
+        assertEquals(ValidationError.PasswordMissingDigit, result.error)
     }
 
     @Test
@@ -45,7 +46,7 @@ class ValidatePasswordUseCaseTest {
         val result = validatePasswordUseCase("test123")
 
         assertFalse(result.successful)
-        assertEquals("Password must contain at least one uppercase letter", result.errorMessage)
+        assertEquals(ValidationError.PasswordMissingUppercase, result.error)
     }
 
     @Test
@@ -53,6 +54,6 @@ class ValidatePasswordUseCaseTest {
         val result = validatePasswordUseCase("Test123")
 
         assertTrue(result.successful)
-        assertNull(result.errorMessage)
+        assertNull(result.error)
     }
 }

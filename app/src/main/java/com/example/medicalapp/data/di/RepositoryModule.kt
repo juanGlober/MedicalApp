@@ -2,8 +2,10 @@ package com.example.medicalapp.data.di
 
 import com.example.medicalapp.data.repository.AuthRepositoryImpl
 import com.example.medicalapp.data.repository.DoctorRepositoryImpl
+import com.example.medicalapp.data.repository.FavoriteDoctorRepositoryImpl
 import com.example.medicalapp.domain.repository.AuthRepository
 import com.example.medicalapp.domain.repository.DoctorRepository
+import com.example.medicalapp.domain.repository.FavoriteDoctorRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +27,10 @@ abstract class RepositoryModule {
     abstract fun bindDoctorRepository(
         doctorRepositoryImpl: DoctorRepositoryImpl
     ): DoctorRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFavoriteDoctorRepository(
+        favoriteDoctorRepositoryImpl: FavoriteDoctorRepositoryImpl
+    ): FavoriteDoctorRepository
 }
